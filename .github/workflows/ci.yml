@@ -35,6 +35,10 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
+      - name: Remove latest tag to avoid confusion
+        run: |
+          git tag -d latest || true
+
       #- name: Regenerate symlinks pointing to submodule (Windows)
       #  if: ${{ matrix.os == 'windows-2022' }}
       #  run: |
