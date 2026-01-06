@@ -35,6 +35,11 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
+      - name: Fetch upstream tags
+        run: |
+          git remote add upstream https://github.com/fcitx5-android/fcitx5-android.git || true
+          git fetch upstream --tags
+
       - name: Remove latest tag to avoid confusion
         run: |
           git tag -d latest || true
