@@ -79,6 +79,10 @@ jobs:
         uses: gradle/gradle-build-action@v3
 
       - name: Build Release APK
+        env:
+          SIGN_KEY_BASE64: ${{ secrets.SIGNING_KEY }}
+          SIGN_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          SIGN_KEY_PWD: ${{ secrets.KEY_PASSWORD }}
         run: |
           ./gradlew :app:assembleRelease
           ./gradlew :assembleReleasePlugins
@@ -95,30 +99,6 @@ jobs:
             fi
           done
         
-      - name: Sign all App
-        uses: kevin-david/zipalign-sign-android-release@v1.1.1
-        id: sign_apk
-        with:
-          releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
-          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
-          alias: ${{ secrets.KEY_ALIAS }}
-          keyPassword: ${{ secrets.KEY_PASSWORD }}
-          zipAlign: true
-        env:
-          BUILD_TOOLS_VERSION: "31.0.0"
-
-      - name: Delete unsigned APKs
-        shell: bash
-        run: |
-          rm app/build/outputs/apk/release/*unsigned.apk
-          pushd app/build/outputs/apk/release
-          for file in *unsigned-*; do
-            new_name="${file/unsigned-/}"
-            mv -- "$file" "$new_name"
-          done
-          popd
-
       - name: Upload app with plugins
         uses: actions/upload-artifact@v4
         with:
